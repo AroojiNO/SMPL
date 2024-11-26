@@ -1,37 +1,41 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-import { TabBarIcon } from '@/components/navigation/TabBarIcon';
-import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
-
+export default function Tablayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-      }}>
+        tabBarActiveTintColor: '#ffd33d',
+    headerStyle: {
+      backgroundColor: '#25292e',
+    },
+    headerShadowVisible: false,
+    headerTintColor: '#fff',
+    tabBarStyle: {
+    backgroundColor: '#25292e',
+    },
+      }}
+    >
       <Tabs.Screen
-        name="index"
+       name="index"
+       options={{
+        title: 'Home',
+        tabBarIcon: ({ color, focused}) => (
+          <Ionicons name={focused ? 'home-sharp' : 'home-outline'} color={color} size={24} />
+        ),
+       }}
+       />
+       <Tabs.Screen
+        name="photo_upload"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          title: 'Photo Upload',
+          tabBarIcon: ({ color, focused}) => (
+            <MaterialCommunityIcons name={focused ? 'file-upload' : 'file-upload-outline'} color={color} size={24} />
           ),
         }}
-      />
-      <Tabs.Screen
-        name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'code-slash' : 'code-slash-outline'} color={color} />
-          ),
-        }}
-      />
+        />
     </Tabs>
   );
 }
+
