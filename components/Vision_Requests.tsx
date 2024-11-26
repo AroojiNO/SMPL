@@ -5,7 +5,7 @@ import * as FileSystem from 'expo-file-system';
 import axios from 'axios';
 
 /*Not used yet, just a place holder to be able to deal with the vision calls in the future */
-const GOOGLE_VISION_API_KEY = 'AIzaSyAkgJ_wEoRSkBLdEPY4Yq0eLFId3Mn20i8';
+const GOOGLE_VISION_API_KEY = '';
 
 const [image, setImage] = useState(null);
 const [labels, setLabels] = useState([]);
