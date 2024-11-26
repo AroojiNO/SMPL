@@ -7,8 +7,6 @@ import Button from '@/components/Button';
 
 import * as ImagePicker from 'expo-image-picker';
 
-const GOOGLE_VISION_API_KEY = 'AIzaSyAkgJ_wEoRSkBLdEPY4Yq0eLFId3Mn20i8'; //not actually used yet
-
 const PlaceholderImage = require("@/assets/images/background-image.png");
 
 /* Function to be able to handle the Image Picker button
