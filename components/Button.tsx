@@ -7,6 +7,8 @@ type Props = {
   onPress?: () => void;
 };
 
+/*Need to be able to handle the two different types of Buttons
+  If primary is given to the call it will be treated as a picture chooser, else just send an alert */
 export default function Button({ label, theme, onPress }: Props) {
   if (theme === 'primary') {
     return (

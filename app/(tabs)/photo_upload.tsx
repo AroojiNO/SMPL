@@ -7,10 +7,12 @@ import Button from '@/components/Button';
 
 import * as ImagePicker from 'expo-image-picker';
 
-const GOOGLE_VISION_API_KEY = 'AIzaSyAkgJ_wEoRSkBLdEPY4Yq0eLFId3Mn20i8';
+const GOOGLE_VISION_API_KEY = 'AIzaSyAkgJ_wEoRSkBLdEPY4Yq0eLFId3Mn20i8'; //not actually used yet
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
 
+/* Function to be able to handle the Image Picker button
+    if no photo is selected, then it will use the default image*/
 export default function photo_upload() {
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 

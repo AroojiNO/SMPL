@@ -6,6 +6,7 @@ type Props ={
     selectedImage?: string;
 };
 
+/* This is the class that deals with the image showing in the photo_upload page*/
 export default function ImageViewer({ imgSource, selectedImage }: Props) {
     const imageSource = selectedImage ? { uri: selectedImage } : imgSource;
 

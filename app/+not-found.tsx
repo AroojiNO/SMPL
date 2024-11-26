@@ -1,6 +1,7 @@
 import {View, StyleSheet} from 'react-native';
 import { Link, Stack } from 'expo-router';
 
+/*This is the redirect page in case the wrong address is put in on web */
 export default function NotFoundScreen() {
     return(
         <>
