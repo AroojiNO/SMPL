@@ -26,7 +26,7 @@ const MovableSquare: React.FC<MovableSquareProps> = ({
         { useNativeDriver: false }
       ),
       onPanResponderRelease: () => {
-        // Optional: Add logic for when dragging stops
+        pan.flattenOffset(); // Maintain the position when dragging stops
       },
     })
   ).current;
@@ -47,9 +47,14 @@ const MovableSquare: React.FC<MovableSquareProps> = ({
       {/* Pressable overlay for removing the square */}
       <Pressable
         style={styles.removeArea}
-        onPress={onRemove} // Call the remove callback when pressed
+        onPress={(e) => {
+          e.stopPropagation(); // Prevent the press event from propagating
+          if (onRemove) {
+        onRemove();
+          }
+        }} // Call the remove callback when pressed
       >
-        <Text style={styles.removeText}>Remove</Text>
+        <Text style={styles.removeText}>X</Text>
       </Pressable>
 
       {/* Content of the square */}
@@ -67,7 +72,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 5,
     elevation: 5, // Shadow for Android
-    position: 'relative',
+    ...StyleSheet.absoluteFillObject, // Fill the parent
   },
   removeArea: {
     position: 'absolute',
