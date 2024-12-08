@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { View, Text, StyleSheet, PanResponder, Animated, Pressable } from 'react-native';
 
 // Props for customization
@@ -22,11 +22,10 @@ const MovableSquare: React.FC<MovableSquareProps> = ({
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onPanResponderMove: Animated.event(
-        [null, { dx: pan.x, dy: pan.y }],
-        { useNativeDriver: false }
+        [null, { dx: pan.x, dy: pan.y }]
       ),
       onPanResponderRelease: () => {
-        pan.flattenOffset(); // Maintain the position when dragging stops
+        pan.extractOffset(); // Maintain the position when dragging stops
       },
     })
   ).current;
@@ -40,7 +39,7 @@ const MovableSquare: React.FC<MovableSquareProps> = ({
           width: size,
           height: size,
           backgroundColor: color,
-          transform: pan.getTranslateTransform(),
+          transform: [{translateX: pan.x}, {translateY: pan.y}],
         },
       ]}
     >
