@@ -66,21 +66,21 @@ export default function photo_upload() {
     return (
         <View style={styles.container}>
             <View style={styles.imageContainer}>
-            <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
+                <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
             </View>
             <Text style={styles.text}> Please Upload JPG, PNG, or JPEG Files here </Text>
             <View style={styles.footerContainer}>
-            <Button theme="primary" label="Upload a Photo Here" onPress={pickImageAsync} />
-            <Button label="Process Recipe into Macros" onPress={createSquare}/>
+                <Button theme="primary" label="Upload a Photo Here" onPress={pickImageAsync} />
+                <Button label="Process Recipe into Macros" onPress={createSquare} />
             </View>
             {squares.map((square) => (
-            <MovableSquare
-                key={square.id}
-                size={square.size}
-                color={square.color}
-                text={square.text}
-                onRemove={() => removeSquare(square.id)}
-            />
+                <MovableSquare
+                    key={square.id}
+                    size={square.size}
+                    color={square.color}
+                    text={square.text}
+                    onRemove={() => removeSquare(square.id)}
+                />
             ))}
         </View>
     );
@@ -95,13 +95,16 @@ const styles = StyleSheet.create({
     },
     text: {
         color: '#fff',
+        userSelect: 'none',
     },
     imageContainer: {
         flex: 1,
         paddingTop: 28,
+        userSelect: 'none',
     },
     footerContainer: {
         flex: 1 / 3,
         alignItems: 'center',
+        userSelect: 'none',
     },
 });

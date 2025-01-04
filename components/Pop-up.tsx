@@ -84,6 +84,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1, // Ensure it's on top
+    userSelect: 'none', // Disable text selection
   },
   removeText: {
     color: 'white',
@@ -95,6 +96,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     textAlign: 'center',
+    userSelect: 'none', // Disable text selection
   },
 });
 
