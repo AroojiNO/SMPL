@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet, Image} from 'react-native';
+import {Text, View, StyleSheet, Image, Alert} from 'react-native';
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 
@@ -21,31 +21,6 @@ interface Square {
 /* Function to be able to handle the Image Picker button
     if no photo is selected, then it will use the default image*/
 export default function photo_upload( ) {
-
-    const [squares, setSquares] = useState<Square[]>([]);
-    const [nextId, setNextId] = useState(1);
-
-    const createSquare =  () => {
-        if (squares.length < 5) { // Set the max number of squares to 5
-            setSquares([
-            ...squares,
-            {
-                id: nextId,
-                size: 150,
-                color: `#${Math.floor(Math.random() * 16777215).toString(16)}`,
-                text: `Square ${nextId}`,
-            },
-            ]);
-            setNextId(nextId + 1);
-        } else {
-            alert('Maximum number of squares reached.');
-        }
-        setNextId(nextId + 1);
-    };
-
-    const removeSquare = (id: number) => {
-        setSquares(squares.filter((square) => square.id !== id));
-    };
 
     const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
     const [extractedText, setExtractedText] = useState('');
@@ -130,17 +105,8 @@ export default function photo_upload( ) {
             <Text style={styles.text}> Please Upload JPG, PNG, or JPEG Files here </Text>
             <View style={styles.footerContainer}>
                 <Button theme="primary" label="Upload a Photo Here" onPress={pickImageAsync} />
-                <Button label="Process Recipe into Macros" onPress={createSquare} />
+                <Button label="Process Recipe into Macros" onPress={() => alert("You can now return to the main page.")} />
             </View>
-            {squares.map((square) => (
-                <MovableSquare
-                    key={square.id}
-                    size={square.size}
-                    color={square.color}
-                    text={square.text}
-                    onRemove={() => removeSquare(square.id)}
-                />
-            ))}
         </View>
     );
 }
