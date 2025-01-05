@@ -9,6 +9,7 @@ import Button from '@/components/Button';
 import * as ImagePicker from 'expo-image-picker';
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
+const GOOGLE_VISION_API_KEY = process.env.Vision_API_Key
 
 interface Square {
     id: number; // Unique identifier
@@ -19,23 +20,7 @@ interface Square {
 
 /* Function to be able to handle the Image Picker button
     if no photo is selected, then it will use the default image*/
-export default function photo_upload() {
-    const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-
-    const pickImageAsync = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 1,
-            base64: true,
-        });
-
-        if (!result.canceled) {
-            setSelectedImage(result.assets[0].uri);
-        } else {
-            alert('You did not select any image.');
-        }
-
-    };
+export default function photo_upload( ) {
 
     const [squares, setSquares] = useState<Square[]>([]);
     const [nextId, setNextId] = useState(1);
@@ -62,6 +47,80 @@ export default function photo_upload() {
         setSquares(squares.filter((square) => square.id !== id));
     };
 
+    const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+    const [extractedText, setExtractedText] = useState('');
+
+    const pickImageAsync = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            allowsEditing: true,
+            quality: 1,
+            base64: true,
+        });
+
+        if (!result.canceled) {
+            const asset =result.assets[0];
+            setSelectedImage(asset.uri);
+            
+            if (asset.base64) {
+                const visionResult = await callVisionAPI(asset.base64);
+                handleVisionResponse(visionResult);
+              }
+        } else {
+            alert('You did not select any image.');
+        }
+
+    };
+
+    const callVisionAPI = async (base64Image: string) => {
+        // You can replace TEXT_DETECTION with other features, like LABEL_DETECTION, FACE_DETECTION, etc.
+        const requestBody = {
+          requests: [
+            {
+              image: {
+                content: base64Image,
+              },
+              features: [
+                {
+                  type: 'TEXT_DETECTION',
+                },
+              ],
+            },
+          ],
+        };
+    
+        try {
+          const response = await fetch(
+            `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_VISION_API_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(requestBody),
+            }
+          );
+          const data = await response.json();
+          return data;
+        } catch (error) {
+          console.log('Error calling Vision API:', error);
+          return null;
+        }
+      };
+    
+      // This extracts the text portion from the Vision API response
+      const handleVisionResponse = (visionResult: { responses: { fullTextAnnotation: { text: React.SetStateAction<string>; }; }[]; }) => {
+        // Usually, you'll find text in visionResult.responses[0].fullTextAnnotation.text
+        if (
+          visionResult &&
+          visionResult.responses &&
+          visionResult.responses[0] &&
+          visionResult.responses[0].fullTextAnnotation
+        ) {
+            const text = visionResult.responses[0].fullTextAnnotation.text;
+            setExtractedText(text);
+
+        } else {
+          setExtractedText('No text found');
+        }
+      };
     
     return (
         <View style={styles.container}>

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 
-export default function Index() {
+export default function Index({ } ) {
   return (
     <View style={styles.container}>
     {/*Block 1*/}
     <View style = {[ styles.block, styles.topLeft ] } >
-      <Text style={styles.text}>Recipe 1</Text>
+      <Text style={styles.text}>Recipe 1:</Text>
     </View >
 
     {/*Block 2*/} 
