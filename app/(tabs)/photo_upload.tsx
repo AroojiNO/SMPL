@@ -1,8 +1,6 @@
 import {Text, View, StyleSheet, Image, Alert} from 'react-native';
 import React, { useState } from 'react';
-import { useNavigation } from '@react-navigation/native';
 
-import MovableSquare from '@/components/Pop-up';
 import ImageViewer from '@/components/ImageViewer';
 import Button from '@/components/Button';
 
