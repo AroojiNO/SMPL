@@ -1,4 +1,4 @@
-import {Text, View, StyleSheet, Image, Alert} from 'react-native';
+import { Text, View, StyleSheet, Image, Alert } from 'react-native';
 import React, { useState } from 'react';
 
 import ImageViewer from '@/components/ImageViewer';
@@ -10,124 +10,55 @@ const PlaceholderImage = require("@/assets/images/background-image.png");
 const GOOGLE_VISION_API_KEY = process.env.Vision_API_Key
 
 interface Square {
-    id: number; // Unique identifier
-    size: number;
-    color: string;
-    text: string;
+  id: number; // Unique identifier
+  size: number;
+  color: string;
+  text: string;
 }
 
 /* Function to be able to handle the Image Picker button
     if no photo is selected, then it will use the default image*/
-export default function photo_upload( ) {
+export default function photo_upload() {
 
-    const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-    const [extractedText, setExtractedText] = useState('');
+  const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
 
-    const pickImageAsync = async () => {
-        let result = await ImagePicker.launchImageLibraryAsync({
-            allowsEditing: true,
-            quality: 1,
-            base64: true,
-        });
+  const pickImageAsync = async () => {
+    let result = await ImagePicker.launchImageLibraryAsync({
+      allowsEditing: true,
+      quality: 1,
+      base64: true,
+    });
 
-        if (!result.canceled) {
-            const asset =result.assets[0];
-            setSelectedImage(asset.uri);
-            
-            if (asset.base64) {
-                const visionResult = await callVisionAPI(asset.base64);
-                handleVisionResponse(visionResult);
-              }
-        } else {
-            alert('You did not select any image.');
-        }
+    if (!result.canceled) {
+      const asset = result.assets[0];
+      setSelectedImage(asset.uri);
 
-    };
+    } else {
+      alert('You did not select any image.');
+    }
 
-    const callVisionAPI = async (base64Image: string) => {
-        // You can replace TEXT_DETECTION with other features, like LABEL_DETECTION, FACE_DETECTION, etc.
-        const requestBody = {
-          requests: [
-            {
-              image: {
-                content: base64Image,
-              },
-              features: [
-                {
-                  type: 'TEXT_DETECTION',
-                },
-              ],
-            },
-          ],
-        };
-    
-        try {
-          const response = await fetch(
-            `https://vision.googleapis.com/v1/images:annotate?key=${GOOGLE_VISION_API_KEY}`,
-            {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(requestBody),
-            }
-          );
-          const data = await response.json();
-          return data;
-        } catch (error) {
-          console.log('Error calling Vision API:', error);
-          return null;
-        }
-      };
-    
-      // This extracts the text portion from the Vision API response
-      const handleVisionResponse = (visionResult: { responses: { fullTextAnnotation: { text: React.SetStateAction<string>; }; }[]; }) => {
-        // Usually, you'll find text in visionResult.responses[0].fullTextAnnotation.text
-        if (
-          visionResult &&
-          visionResult.responses &&
-          visionResult.responses[0] &&
-          visionResult.responses[0].fullTextAnnotation
-        ) {
-            const text = visionResult.responses[0].fullTextAnnotation.text;
-            setExtractedText(text);
-
-        } else {
-          setExtractedText('No text found');
-        }
-      };
-    
-    return (
-        <View style={styles.container}>
-            <View style={styles.imageContainer}>
-                <ImageViewer imgSource={PlaceholderImage} selectedImage={selectedImage} />
-            </View>
-            <Text style={styles.text}> Please Upload JPG, PNG, or JPEG Files here </Text>
-            <View style={styles.footerContainer}>
-                <Button theme="primary" label="Upload a Photo Here" onPress={pickImageAsync} />
-                <Button label="Process Recipe into Macros" onPress={() => alert("You can now return to the main page.")} />
-            </View>
-        </View>
-    );
-}
+  }
+};
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#25292e',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    text: {
-        color: '#fff',
-        userSelect: 'none',
-    },
-    imageContainer: {
-        flex: 1,
-        paddingTop: 28,
-        userSelect: 'none',
-    },
-    footerContainer: {
-        flex: 1 / 3,
-        alignItems: 'center',
-        userSelect: 'none',
-    },
+  container: {
+    flex: 1,
+    backgroundColor: '#25292e',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  text: {
+    color: '#fff',
+    userSelect: 'none',
+  },
+  imageContainer: {
+    flex: 1,
+    paddingTop: 28,
+    userSelect: 'none',
+  },
+  footerContainer: {
+    flex: 1 / 3,
+    alignItems: 'center',
+    userSelect: 'none',
+  },
 });
