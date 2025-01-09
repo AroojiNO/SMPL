@@ -27,18 +27,20 @@ const analyzeImage = async (req, res) => {
 
     const imagePath = req.file.path;
 
-    // Perform label detection using Google Vision
+    // Perform TEXT detection using Google Vision
     const [result] = await client.textDetection(imagePath);
-    const texts = result.textAnnotations;
+    const textAnnotations = result.textAnnotations;
 
-    // Optionally, perform other types of analysis:
-    // const [result] = await client.textDetection(imagePath);
-    // const texts = result.textAnnotations;
+    // Extract the detected text (usually the first element contains the complete text)
+    const detectedText = textAnnotations.length > 0 ? textAnnotations[0].description : '';
 
     // Save result to MongoDB
     const visionResult = new VisionResult({
       imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`,
-      annotations: labels,
+      annotations: {
+        text: detectedText,
+        fullTextAnnotation: result.fullTextAnnotation, // Optional: More detailed info
+      },
     });
 
     await visionResult.save();

@@ -1,64 +1,127 @@
-import { Text, View, StyleSheet, Image, Alert } from 'react-native';
+import { Text, View, Button,StyleSheet, Image, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-
-import ImageViewer from '@/components/ImageViewer';
-import Button from '@/components/Button';
+import axios from 'axios';
 
 import * as ImagePicker from 'expo-image-picker';
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
-const GOOGLE_VISION_API_KEY = process.env.Vision_API_Key
-
-interface Square {
-  id: number; // Unique identifier
-  size: number;
-  color: string;
-  text: string;
-}
 
 /* Function to be able to handle the Image Picker button
     if no photo is selected, then it will use the default image*/
 export default function photo_upload() {
 
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
+  const [text, setTextAnnotations] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
       quality: 1,
-      base64: true,
     });
 
     if (!result.canceled) {
       const asset = result.assets[0];
       setSelectedImage(asset.uri);
-
-    } else {
+      setError(null);
+      setTextAnnotations([]);
+    }
+    else {
       alert('You did not select any image.');
     }
+  };
 
-  }
-};
+  const uploadImage = async () => {
+    if (!selectedImage) {
+      alert('Please select an image first!');
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const formData = new FormData();
+      // Extract filename and type
+      const filename = selectedImage.split('/').pop() || '';
+      const match = /\.(\w+)$/.exec(filename);
+      const type = match ? `image/${match[1]}` : `image`;
+
+      const imageResponse = await fetch(selectedImage);
+      const blob = await imageResponse.blob();
+
+      formData.append('image', blob, filename);
+
+      // Replace with your backend URL
+      const response = await axios.post('http://mongodb+srv://noaharooji:roZNER8Uw7sHx3kF@macronutrient-app-backe.7pht7.mongodb.net/controllers/visionController/analyze', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      if (response.data.data.annotations.text) {
+        setTextAnnotations(response.data.data.annotations.text);
+      } else {
+        setTextAnnotations([{ description: 'No text detected.', score: 0 }]);
+      }
+    } catch (err) {
+      console.error(err);
+      setError('Failed to upload and analyze image.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <ScrollView contentContainerStyle={styles.container}>
+      <Button title="Pick an Image" onPress={pickImageAsync} />
+
+      {selectedImage && (
+        <>
+          <Image source={{ uri: selectedImage }} style={styles.image} />
+          <Button title="Upload and Analyze" onPress={uploadImage} />
+        </>
+      )}
+
+      {loading && <ActivityIndicator size="large" color="#0000ff" />}
+
+      {text && (
+        <View style={styles.annotations}>
+          <Text style={styles.title}>Detected Text:</Text>
+          <Text style={styles.text}>{text}</Text>
+        </View>
+      )}
+
+      {error && <Text style={styles.error}>{error}</Text>}
+    </ScrollView>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#25292e',
-    justifyContent: 'center',
     alignItems: 'center',
+    padding: 20,
+  },
+  image: {
+    width: 300,
+    height: 300,
+    marginVertical: 20,
+  },
+  annotations: {
+    marginTop: 20,
+    alignItems: 'flex-start',
   },
   text: {
-    color: '#fff',
-    userSelect: 'none',
+    fontSize: 14,
   },
-  imageContainer: {
-    flex: 1,
-    paddingTop: 28,
-    userSelect: 'none',
+  title: {
+    fontWeight: 'bold',
+    marginBottom: 10,
   },
-  footerContainer: {
-    flex: 1 / 3,
-    alignItems: 'center',
-    userSelect: 'none',
+  error: {
+    marginTop: 20,
+    color: 'red',
   },
 });
