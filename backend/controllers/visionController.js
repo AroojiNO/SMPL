@@ -31,7 +31,7 @@ const analyzeImage = async (req, res) => {
     const [result] = await client.textDetection(imagePath);
     const textAnnotations = result.textAnnotations;
 
-    // Extract the detected text (usually the first element contains the complete text)
+    // Extract the detected text
     const detectedText = textAnnotations.length > 0 ? textAnnotations[0].description : '';
 
     // Save result to MongoDB
@@ -39,7 +39,7 @@ const analyzeImage = async (req, res) => {
       imageUrl: `${req.protocol}://${req.get('host')}/uploads/${req.file.filename}`,
       annotations: {
         text: detectedText,
-        fullTextAnnotation: result.fullTextAnnotation, // Optional: More detailed info
+        fullTextAnnotation: result.fullTextAnnotation,
       },
     });
 

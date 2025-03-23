@@ -43,7 +43,6 @@ export default function photo_upload() {
 
     try {
       const formData = new FormData();
-      // Extract filename and type
       const filename = selectedImage.split('/').pop() || '';
       const match = /\.(\w+)$/.exec(filename);
       const type = match ? `image/${match[1]}` : `image`;
@@ -53,8 +52,9 @@ export default function photo_upload() {
 
       formData.append('image', blob, filename);
 
-      // Replace with your backend URL
-      const response = await axios.post('http://mongodb+srv://noaharooji:roZNER8Uw7sHx3kF@macronutrient-app-backe.7pht7.mongodb.net/controllers/visionController/analyze', formData, {
+      const backendURL = process.env.MONGO_URI;
+      // Ensure the endpoint is correct
+      const response = await axios.post(backendURL + '/backend/controllers/visionController/analyzeImage', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },

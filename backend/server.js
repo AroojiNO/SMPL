@@ -13,7 +13,6 @@ const app = express();
 app.use(cors()); // Enable CORS so your React app can communicate with this backend
 
 // MongoDB Atlas connection
-// Replace <username>, <password>, and <cluster-url> with your details.
 const mongoURI = process.env.MONGO_URI;
 mongoose
   .connect(mongoURI)
