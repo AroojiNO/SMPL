@@ -1,7 +1,6 @@
-import { Text, View, Button,StyleSheet, Image, Alert, ActivityIndicator, ScrollView } from 'react-native';
+import { Text, View, Button, StyleSheet, Image, ActivityIndicator, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import axios from 'axios';
-
 import * as ImagePicker from 'expo-image-picker';
 
 const PlaceholderImage = require("@/assets/images/background-image.png");
@@ -11,9 +10,9 @@ const PlaceholderImage = require("@/assets/images/background-image.png");
 export default function photo_upload() {
 
   const [selectedImage, setSelectedImage] = useState<string | undefined>(undefined);
-  const [text, setTextAnnotations] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [text, setTextAnnotations] = useState<any[]>([]);
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -26,8 +25,7 @@ export default function photo_upload() {
       setSelectedImage(asset.uri);
       setError(null);
       setTextAnnotations([]);
-    }
-    else {
+    } else {
       alert('You did not select any image.');
     }
   };
@@ -44,29 +42,25 @@ export default function photo_upload() {
     try {
       const formData = new FormData();
       const filename = selectedImage.split('/').pop() || '';
-      const match = /\.(\w+)$/.exec(filename);
-      const type = match ? `image/${match[1]}` : `image`;
-
       const imageResponse = await fetch(selectedImage);
       const blob = await imageResponse.blob();
 
       formData.append('image', blob, filename);
 
-      const backendURL = process.env.MONGO_URI;
-      // Ensure the endpoint is correct
-      const response = await axios.post(backendURL + '/backend/controllers/visionController/analyzeImage', formData, {
+      const backendURL = process.env.MONGO_URI; // Ensure this is set correctly
+      const response = await axios.post(`${backendURL}/api/vision/upload`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
 
-      if (response.data.data.annotations.text) {
-        setTextAnnotations(response.data.data.annotations.text);
+      if (response.data.success) {
+        setTextAnnotations(response.data.recipe.ingredients);
       } else {
-        setTextAnnotations([{ description: 'No text detected.', score: 0 }]);
+        setError('Failed to process the image.');
       }
     } catch (err) {
-      console.error(err);
+      console.error('Upload error:', err);
       setError('Failed to upload and analyze image.');
     } finally {
       setLoading(false);
@@ -76,23 +70,21 @@ export default function photo_upload() {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <Button title="Pick an Image" onPress={pickImageAsync} />
-
       {selectedImage && (
         <>
           <Image source={{ uri: selectedImage }} style={styles.image} />
           <Button title="Upload and Analyze" onPress={uploadImage} />
         </>
       )}
-
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
-      {text && (
+      {text.length > 0 && (
         <View style={styles.annotations}>
-          <Text style={styles.title}>Detected Text:</Text>
-          <Text style={styles.text}>{text}</Text>
+          <Text style={styles.title}>Detected Ingredients:</Text>
+          {text.map((ingredient, index) => (
+            <Text key={index} style={styles.text}>{ingredient}</Text>
+          ))}
         </View>
       )}
-
       {error && <Text style={styles.error}>{error}</Text>}
     </ScrollView>
   );
